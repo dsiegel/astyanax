@@ -195,8 +195,11 @@ public final class ThriftKeyspaceImpl implements Keyspace {
                         List<TokenRange> range = Lists.newArrayList();
 
                         for (org.apache.cassandra.thrift.TokenRange tr : trs) {
+                            assert tr.getRpc_endpointsSize() == tr.getEndpoint_detailsSize();
+
                             List<String> endpoints = Lists.newArrayList();
-                            for (org.apache.cassandra.thrift.EndpointDetails ed : tr.getEndpoint_details()) {
+                            for(int i = 0; i < tr.getEndpoint_detailsSize(); i++) {
+                                EndpointDetails ed = tr.getEndpoint_details().get(i);
                                 if (dc != null && !ed.getDatacenter().equals(dc)) {
                                     continue;
                                 }
@@ -204,7 +207,7 @@ public final class ThriftKeyspaceImpl implements Keyspace {
                                     continue;
                                 }
                                 else {
-                                    endpoints.add(ed.getHost());
+                                    endpoints.add(tr.getRpc_endpoints().get(i));
                                 }
                             }
 
